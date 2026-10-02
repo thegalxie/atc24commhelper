@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Interactive Garmin GTR 225 frequency trainer" />
+    <title>GTR 225 Radio Trainer</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%231c1d1d'/%3E%3Crect x='10' y='17' width='44' height='30' rx='3' fill='%23040504' stroke='%236b6d68' stroke-width='3'/%3E%3Cpath d='M16 30h32M16 37h24' stroke='%23f4f6ed' stroke-width='3'/%3E%3C/svg%3E" />
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body {
+        min-height: 100vh; margin: 0; display: grid; place-items: center;
+        padding: clamp(1.25rem, 4vw, 3.5rem); background: #111312;
+        color: #e8ebe3; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      main { width: min(100%, 1060px); }
+      .eyebrow { margin: 0 0 .55rem; font-size: .78rem; font-weight: 800; letter-spacing: .14em; color: #9ca29a; text-transform: uppercase; }
+      h1 { margin: 0; font-size: clamp(1.6rem, 4vw, 2.6rem); letter-spacing: -.045em; }
+      .guide { margin: .75rem 0 2rem; max-width: 46rem; color: #b8bdb5; font-size: 1rem; line-height: 1.55; }
+      kbd { padding: .08rem .34rem; border: 1px solid #555b55; border-radius: .28rem; background: #202320; color: #f4f6ed; font: inherit; font-size: .86em; }
+      .radio-stage { padding: clamp(1rem, 3vw, 2.25rem); border: 1px solid #30342f; border-radius: 1.4rem; background: radial-gradient(circle at 48% 0%, #30342e 0, #1c1f1c 40%, #171917 100%); box-shadow: 0 1.6rem 4rem rgba(0,0,0,.35); }
+      .device {
+        position: relative; width: 100%; aspect-ratio: 661 / 174; overflow: hidden;
+        border-radius: .35rem; filter: drop-shadow(0 .7rem .9rem rgba(0,0,0,.5));
+      }
+      .device-photo { position: absolute; width: 121.03%; left: -9.08%; top: 0; transform: translateY(-47.75%); user-select: none; pointer-events: none; }
+      .display {
+        position: absolute; left: 23%; top: 12.8%; width: 54.8%; height: 39.3%; padding: 3.2% 3.4% 2.3%;
+        display: grid; grid-template-columns: 1.04fr .96fr; gap: 2%; overflow: hidden;
+        background: linear-gradient(180deg, #060806, #020302); border: 1px solid #292c28;
+        box-shadow: inset 0 0 1.2rem rgba(0,0,0,.95), 0 0 .45rem rgba(0,0,0,.8);
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; color: #f9faf3;
+      }
+      .channel { min-width: 0; }
+      .channel-right { position: relative; grid-column: 2; text-align: right; }
+      .channel-active { grid-column: 1; }
+      .channel-label { display: flex; align-items: baseline; gap: .35em; font-size: clamp(.31rem, 1.25vw, .68rem); font-weight: 800; letter-spacing: .1em; color: #e0e3d9; }
+      .channel-right .channel-label { justify-content: flex-end; }
+      .frequency { display: block; margin-top: -.08em; font-size: clamp(.85rem, 4.25vw, 2.35rem); line-height: .92; font-weight: 900; letter-spacing: -.09em; text-shadow: 0 0 .12em rgba(255,255,255,.55); white-space: nowrap; }
+      .station { margin-top: .42em; font-size: clamp(.26rem, 1.15vw, .62rem); font-weight: 800; letter-spacing: .04em; color: #d5d8cd; white-space: nowrap; }
+      .standby-input {
+        position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; opacity: 0; cursor: text;
+        font-size: 16px;
+      }
+      .channel-right:focus-within .frequency { color: #fff; text-shadow: 0 0 .23em #fff; }
+      .standby-focus-outline { position: absolute; left: 53.4688%; top: 14.9615%; width: 23.016%; height: 32.4225%; border: 1px solid rgba(240,244,230,.5); pointer-events: none; }
+      .standby-focus-outline[hidden] { display: none; }
+      .swap-button {
+        position: absolute; left: 76.45%; top: 33%; width: 6.05%; aspect-ratio: 4 / 3; min-width: 0; min-height: 0; overflow: hidden; padding: 0; border: 0; border-radius: 12%;
+        font-size: 0; line-height: 0;
+        cursor: pointer; background: transparent; color: transparent;
+      }
+      .swap-button:focus-visible { outline: 2px solid #e6ecdd; outline-offset: 3px; }
+      .swap-button:active { transform: scale(.94); }
+      .channel-active { position: relative; z-index: 2; }
+      .active-station { display: flex; align-items: center; gap: .72em; }
+      .active-frequency { color: inherit; text-decoration: none; }
+      .active-frequency[href] { cursor: pointer; }
+      .active-frequency[href]:hover { color: #fff19a; text-shadow: 0 0 .25em rgba(255, 219, 33, .75); }
+      .active-frequency:focus-visible { outline: 1px solid #fff19a; outline-offset: .12em; }
+      .discord-transfer { color: #ffdb21; font: inherit; font-weight: 900; letter-spacing: .07em; text-decoration: none; text-shadow: 0 0 .3em rgba(255, 211, 0, .7); }
+      .discord-transfer:hover { color: #fff19a; text-decoration: underline; }
+      .discord-transfer:focus-visible { outline: 1px solid #fff19a; outline-offset: 2px; }
+      .discord-transfer[hidden] { display: none; }
+      .discord-transfer.flash-on-swap { animation: transfer-flash .34s steps(2, end) 4; }
+      @keyframes transfer-flash { 50% { opacity: .18; text-shadow: none; } }
+      @media (prefers-reduced-motion: reduce) { .discord-transfer.flash-on-swap { animation: none; } }
+      .status { min-height: 1.35rem; margin: 1rem 0 0; color: #b7c2ad; font-size: .92rem; }
+      .status strong { color: #f0f4e9; }
+      .caption { margin: 1.5rem 0 0; color: #858d84; font-size: .82rem; line-height: 1.5; }
+      @media (max-width: 560px) {
+        body { padding: 1rem; align-items: start; }
+        .radio-stage { padding: .75rem; border-radius: 1rem; }
+        .guide { margin-bottom: 1.35rem; }
+        .display { padding-top: 2.5%; }
+        .station { margin-top: .22em; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">Garmin GTR 225</p>
+      <h1>Frequency trainer</h1>
+      <p class="guide">Select the standby frequency on the right and type up to five digits after the implied leading <kbd>1</kbd>—for example <kbd>259</kbd> displays as <strong>125.900</strong>. Missing digits are filled with zeros. Use the right-side transfer button to exchange the active and standby frequencies.</p>
+      <section class="radio-stage" aria-label="Interactive GTR 225 radio">
+        <div class="device">
+          <img class="device-photo" src="gtr225-reference.png" alt="Garmin GTR 225 radio face" />
+          <div class="display" aria-live="polite">
+            <div class="channel channel-active">
+              <div class="channel-label"><span>TX</span><span>ACT</span><span>COM</span></div>
+              <a class="frequency active-frequency" id="activeFrequency" target="_blank" rel="noopener noreferrer">118.500</a>
+              <div class="station active-station"><span id="activeIdentifier">ACTIVE COM</span><a class="discord-transfer" id="discordTransfer" hidden target="_blank" rel="noopener noreferrer">TRANSFER</a></div>
+            </div>
+            <div class="channel channel-right" aria-label="Standby frequency input area">
+              <span class="channel-label"><span>COM</span><span>STBY</span></span>
+              <output class="frequency" id="standbyFrequency">125.900</output>
+              <span class="station">STANDBY COM</span>
+              <input id="standbyInput" class="standby-input" inputmode="numeric" autocomplete="off" maxlength="5" aria-label="Standby frequency: enter up to five digits after the leading 1" value="25900" />
+            </div>
+          </div>
+          <div class="standby-focus-outline" id="standbyFocusOutline" hidden aria-hidden="true"></div>
+          <button class="swap-button" id="swapButton" type="button" aria-label="Transfer standby frequency to active">Transfer frequency</button>
+        </div>
+        <p class="status" id="status" aria-live="polite">Standby ready: <strong>125.900</strong></p>
+      </section>
+      <p class="caption">Training interface based on the supplied GTR 225 reference image.</p>
+    </main>
+    <script>
+      const input = document.getElementById('standbyInput');
+      const active = document.getElementById('activeFrequency');
+      const standby = document.getElementById('standbyFrequency');
+      const standbyFocusOutline = document.getElementById('standbyFocusOutline');
+      const activeIdentifier = document.getElementById('activeIdentifier');
+      const swapButton = document.getElementById('swapButton');
+      const discordTransfer = document.getElementById('discordTransfer');
+      const status = document.getElementById('status');
+
+      const frequencyDetails = new Map();
+
+      const digits = (value) => value.replace(/\D/g, '').slice(0, 5);
+      const complete = (value) => `1${digits(value).padEnd(5, '0')}`;
+      const format = (value) => {
+        const frequency = complete(value);
+        return `${frequency.slice(0, 3)}.${frequency.slice(3)}`;
+      };
+      const inputFromFrequency = (formatted) => formatted.replace('.', '').slice(1);
+      const isDiscordLink = (value) => {
+        try {
+          const url = new URL(value);
+          return url.protocol === 'discord:' && url.hostname === 'discord.com';
+        } catch {
+          return false;
+        }
+      };
+
+      const csvFields = (row) => {
+        const fields = [];
+        let field = '';
+        let quoted = false;
+        for (let index = 0; index < row.length; index += 1) {
+          const character = row[index];
+          if (character === '"') {
+            if (quoted && row[index + 1] === '"') {
+              field += '"';
+              index += 1;
+            } else {
+              quoted = !quoted;
+            }
+          } else if (character === ',' && !quoted) {
+            fields.push(field.trim());
+            field = '';
+          } else {
+            field += character;
+          }
+        }
+        fields.push(field.trim());
+        return fields;
+      };
+
+      async function loadFrequencyDetails() {
+        try {
+          const response = await fetch('frequencies.csv', { cache: 'no-store' });
+          if (!response.ok) throw new Error(`Frequency list unavailable (${response.status})`);
+          const rows = (await response.text()).split(/\r?\n/);
+          for (const row of rows) {
+            if (!row.trim()) continue;
+            const [frequency, identifier, link] = csvFields(row);
+            if (/^\d{5}$/.test(frequency) && identifier && link) {
+              frequencyDetails.set(frequency, { identifier, link });
+            }
+          }
+          updateActiveDetails();
+        } catch (error) {
+          console.warn('Unable to load frequencies.csv', error);
+        }
+      }
+
+      function updateActiveDetails() {
+        const details = frequencyDetails.get(inputFromFrequency(active.textContent));
+        activeIdentifier.textContent = details ? details.identifier : 'ACTIVE COM';
+        const hasDiscordLink = details && isDiscordLink(details.link);
+        discordTransfer.hidden = !hasDiscordLink;
+        if (hasDiscordLink) {
+          active.href = details.link;
+          active.setAttribute('aria-label', `Open ${details.identifier} in Discord`);
+          discordTransfer.href = details.link;
+          discordTransfer.setAttribute('aria-label', `Transfer to ${details.identifier} in Discord`);
+        } else {
+          active.removeAttribute('href');
+          active.removeAttribute('aria-label');
+          discordTransfer.removeAttribute('href');
+          discordTransfer.removeAttribute('aria-label');
+          discordTransfer.classList.remove('flash-on-swap');
+        }
+      }
+
+      function flashTransfer() {
+        if (discordTransfer.hidden) return;
+        discordTransfer.classList.remove('flash-on-swap');
+        void discordTransfer.offsetWidth;
+        discordTransfer.classList.add('flash-on-swap');
+      }
+
+      function drawStandby() {
+        input.value = digits(input.value);
+        standby.textContent = format(input.value);
+        status.innerHTML = `Standby ready: <strong>${format(input.value)}</strong>${input.value.length < 5 ? ' <span>(remaining digits filled with zeros)</span>' : ''}`;
+      }
+
+      input.addEventListener('input', drawStandby);
+      input.addEventListener('focus', () => { standbyFocusOutline.hidden = false; });
+      input.addEventListener('blur', () => { standbyFocusOutline.hidden = true; });
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') swapButton.click();
+      });
+      swapButton.addEventListener('click', () => {
+        const previousActive = active.textContent;
+        active.textContent = format(input.value);
+        input.value = inputFromFrequency(previousActive);
+        standby.textContent = previousActive;
+        updateActiveDetails();
+        flashTransfer();
+        status.innerHTML = `Transferred <strong>${active.textContent}</strong> to active.`;
+        swapButton.animate([{ transform: 'scale(1)' }, { transform: 'scale(.86)' }, { transform: 'scale(1)' }], { duration: 190, easing: 'ease-out' });
+      });
+      drawStandby();
+      updateActiveDetails();
+      loadFrequencyDetails();
+    </script>
+  </body>
+</html>

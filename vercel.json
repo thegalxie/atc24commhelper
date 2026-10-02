@@ -1,0 +1,14 @@
+{
+  "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/frequencies.csv",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    }
+  ]
+}
