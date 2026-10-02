@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Interactive Garmin GTR 225 frequency trainer" />
-    <title>GTR 225 Radio Trainer</title>
+    <meta name="description" content="Interactive Garmin GTR 225 for ATC24" />
+    <title>ATC24 Comm Helper</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='13' fill='%231c1d1d'/%3E%3Crect x='10' y='17' width='44' height='30' rx='3' fill='%23040504' stroke='%236b6d68' stroke-width='3'/%3E%3Cpath d='M16 30h32M16 37h24' stroke='%23f4f6ed' stroke-width='3'/%3E%3C/svg%3E" />
     <style>
       :root { color-scheme: dark; }
@@ -81,8 +81,8 @@
   <body>
     <main>
       <p class="eyebrow">Garmin GTR 225</p>
-      <h1>Frequency trainer</h1>
-      <p class="guide">Select the standby frequency on the right and type up to five digits after the implied leading <kbd>1</kbd>—for example <kbd>259</kbd> displays as <strong>125.900</strong>. Missing digits are filled with zeros. Use the right-side transfer button to exchange the active and standby frequencies.</p>
+      <h1>ATC24 Comm Helper</h1>
+      <p class="guide">Select the standby frequency on the right and type up to five digits after the implied leading <kbd>1</kbd>—for example <kbd>259</kbd> displays as <strong>125.900</strong>. Missing digits are filled with zeros. Use the right-side transfer button to exchange the active and standby frequencies. Supports all public frequencies in ATC24! Discord app required.</p>
       <section class="radio-stage" aria-label="Interactive GTR 225 radio">
         <div class="device">
           <img class="device-photo" src="gtr225-reference.png" alt="Garmin GTR 225 radio face" />
@@ -104,7 +104,7 @@
         </div>
         <p class="status" id="status" aria-live="polite">Standby ready: <strong>125.900</strong></p>
       </section>
-      <p class="caption">Training interface based on the supplied GTR 225 reference image.</p>
+      <p class="caption">Designed by DefaultyBoi101010</p>
     </main>
     <script>
       const input = document.getElementById('standbyInput');
