@@ -1,4 +1,4 @@
-# GTR 225 Radio Trainer
+# Comm Helper for ATC24 Frequency changes
 
 This is a self-contained static website ready for GitHub and Vercel. It has no dependencies and no build command.
 
