@@ -224,6 +224,14 @@
         status.innerHTML = `Transferred <strong>${active.textContent}</strong> to active.`;
         swapButton.animate([{ transform: 'scale(1)' }, { transform: 'scale(.86)' }, { transform: 'scale(1)' }], { duration: 190, easing: 'ease-out' });
       });
+
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && active.hasAttribute('href')) active.click();
+      });
+
+      swapButton.addEventListener('click', () => {
+        if (active.hasAttribute('href')) active.click();
+      });
       drawStandby();
       updateActiveDetails();
       loadFrequencyDetails();
