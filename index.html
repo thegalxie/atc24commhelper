@@ -82,7 +82,7 @@
     <main>
       <p class="eyebrow">Like-Garmin GTR 225</p>
       <h1>ATC24 Comm Helper</h1>
-      <p class="guide">Select the standby frequency on the right and type up to five digits after the implied leading <kbd>1</kbd>—for example <kbd>259</kbd> displays as <strong>125.900</strong>. Missing digits are filled with zeros. Use the right-side transfer button to exchange the active and standby frequencies. Supports all public frequencies in ATC24! Discord app required.</p>
+      <p class="guide">Read the Github repo for instructions. Supports all public frequencies in ATC24! Discord app required.</p>
       <section class="radio-stage" aria-label="Interactive GTR 225 radio">
         <div class="device">
           <img class="device-photo" src="gtr225-reference.png" alt="Like-Garmin GTR 225 radio face" />
@@ -102,7 +102,6 @@
           <div class="standby-focus-outline" id="standbyFocusOutline" hidden aria-hidden="true"></div>
           <button class="swap-button" id="swapButton" type="button" aria-label="Transfer standby frequency to active">Transfer frequency</button>
         </div>
-        <p class="status" id="status" aria-live="polite">Standby ready: <strong>125.900</strong></p>
       </section>
       <p class="caption">Designed by DefaultyBoi101010</p>
     </main>
@@ -205,7 +204,6 @@
       function drawStandby() {
         input.value = digits(input.value);
         standby.textContent = format(input.value);
-        status.innerHTML = `Standby ready: <strong>${format(input.value)}</strong>${input.value.length < 5 ? ' <span>(remaining digits filled with zeros)</span>' : ''}`;
       }
 
       input.addEventListener('input', drawStandby);
@@ -221,7 +219,6 @@
         standby.textContent = previousActive;
         updateActiveDetails();
         flashTransfer();
-        status.innerHTML = `Transferred <strong>${active.textContent}</strong> to active.`;
         swapButton.animate([{ transform: 'scale(1)' }, { transform: 'scale(.86)' }, { transform: 'scale(1)' }], { duration: 190, easing: 'ease-out' });
       });
 
