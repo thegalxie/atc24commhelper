@@ -12,8 +12,6 @@ This is a simple simulation of a Garmin GTR-225 Aviation Radio intended to help 
 ## Future Implements
 
 - Adding different radio styles (Airbus, Boeing, etc.)
-- Implementing a functional "Tune" knob(s) on the right, potentially operated by scroll wheel or dragging the mouse.
-- Adding a transponder tab to identify your aircraft with the ATC24 API.
 - Automatic CENTER frequency suggestions when nearing airspace boundaries
 
 ## [frequencies.csv](frequencies.csv)
