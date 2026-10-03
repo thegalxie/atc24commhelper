@@ -16,5 +16,5 @@ This is a simple simulation of a Garmin GTR-225 Aviation Radio intended to help 
 - Adding a transponder tab to identify your aircraft with the ATC24 API.
 - Automatic CENTER frequency suggestions when nearing airspace boundaries
 
-## [frequencies.csv](atc24commhelper/frequencies.csv)
+## [frequencies.csv](main/frequencies.csv)
 - This was an absolute waste of my time to create by hand. You can use this in your projects if you figure it out, as long as you give credits in your app.
